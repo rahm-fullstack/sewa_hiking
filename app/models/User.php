@@ -28,20 +28,21 @@ class User
         ]);
     }
 
-public static function delete($id)
-{
-    $db = Database::connect();
+    public static function delete($id)
+    {
+        $db = Database::connect();
 
-    $stmt = $db->prepare(
-        "SELECT COUNT(*) FROM rentals WHERE user_id = ?"
-    );
-    $stmt->execute([$id]);
+        $stmt = $db->prepare(
+            "SELECT COUNT(*) FROM rentals WHERE user_id = ?"
+        );
+        $stmt->execute([$id]);
 
-    if ($stmt->fetchColumn() > 0) {
-        return false; // user pernah transaksi
+        if ($stmt->fetchColumn() > 0) {
+            return false; // user pernah transaksi
+        }
+
+        $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
+        return $stmt->execute([$id]);
     }
-
-    $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
-    return $stmt->execute([$id]);
-}
+    
 }

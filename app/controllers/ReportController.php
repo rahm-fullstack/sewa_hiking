@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . '/../models/Report.php';
+require_once __DIR__ . '/../models/Rental.php';
+
 class ReportController
 {
     public static function index()
@@ -13,7 +15,7 @@ class ReportController
     {
         AuthController::checkRole('admin');
 
-        $reports = Report::transactions(null, null);
+        $reports = Rental::transactions(null, null);
 
         require __DIR__ . '/../views/admin/reports/transactions.php';
     }

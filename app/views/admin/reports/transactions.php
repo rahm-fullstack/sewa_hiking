@@ -22,8 +22,8 @@
     <tr>
         <td><?= $i+1 ?></td>
         <td><?= htmlspecialchars($r['user_name']) ?></td>
-        <td><?= htmlspecialchars($r['tool_name']) ?></td>
-        <td><?= htmlspecialchars($r['category_name']) ?></td>
+        <td><?= htmlspecialchars($r['tool_name']?? '-') ?></td>
+        <td><?= htmlspecialchars($r['category_name'] ?? '-') ?></td>
         <td><?= $r['start_date'] ?> → <?= $r['end_date'] ?></td>
         <td>Rp <?= number_format($r['total_price']) ?></td>
         <td><?= $r['status'] ?></td>

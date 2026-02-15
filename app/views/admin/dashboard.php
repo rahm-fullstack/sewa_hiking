@@ -7,3 +7,4 @@
     <li><a href="index.php?page=tools">Kelola Alat</a></li>
     <li><a href="index.php?page=reports">Laporan</a></li>
 </ul>
+<a href="index.php?page=login">⬅ Keluar</a>

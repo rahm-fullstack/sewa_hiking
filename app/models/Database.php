@@ -28,4 +28,17 @@ class Database
         }
         return self::$instance->connection;
     }
+    
+    public static function getConnection()
+    {
+        static $pdo = null;
+
+        if ($pdo === null) {
+            $pdo = new PDO("mysql:host=localhost;dbname=namadb", "root", "");
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        }
+
+        return $pdo;
+    }
+
 }

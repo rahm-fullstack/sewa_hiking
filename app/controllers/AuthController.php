@@ -1,10 +1,11 @@
 <?php
 
 class AuthController
+{ 
+   public static function login()
 {
-    public static function login()
-    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
             $db = Database::connect();
 
             $stmt = $db->prepare(
@@ -13,18 +14,28 @@ class AuthController
                  JOIN roles ON users.role_id = roles.id 
                  WHERE username = ?"
             );
-
             $stmt->execute([$_POST['username']]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user && password_verify($_POST['password'], $user['password'])) {
+
                 $_SESSION['user'] = [
-                    'id' => $user['id'],
+                    'id'   => $user['id'],
                     'role' => $user['role_name'],
                     'name' => $user['name']
                 ];
 
-                header('Location: index.php?page=admin-dashboard');
+                // 🔥 Redirect berdasarkan role
+                if ($user['role_name'] === 'admin') {
+                    header('Location: index.php?page=admin-dashboard');
+                } elseif ($user['role_name'] === 'petugas') {
+                    header('Location: index.php?page=petugas-dashboard');
+                } elseif ($user['role_name'] === 'user') {
+                    header('Location: index.php?page=user-tools');
+                } else {
+                    header('Location: index.php?page=login');
+                }
+
                 exit;
             }
         }
@@ -39,4 +50,5 @@ class AuthController
             exit;
         }
     }
+    
 }

@@ -41,25 +41,25 @@ class AdminController
     //category
 
     public static function addCategory()
-{
-    AuthController::checkRole('admin');
+    {
+        AuthController::checkRole('admin');
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-        if (Category::existsByName($_POST['category_name'])) {
-            $_SESSION['error'] = 'Kategori sudah ada';
-            header('Location: index.php?page=add-category');
+            if (Category::existsByName($_POST['category_name'])) {
+                $_SESSION['error'] = 'Kategori sudah ada';
+                header('Location: index.php?page=add-category');
+                exit;
+            }
+
+            Category::create($_POST);
+
+            header('Location: index.php?page=categories');
             exit;
         }
 
-        Category::create($_POST);
-
-        header('Location: index.php?page=categories');
-        exit;
+        require __DIR__ . '/../views/admin/categories/create.php';
     }
-
-    require __DIR__ . '/../views/admin/categories/create.php';
-}
 
     public static function editCategory()
     {
@@ -76,86 +76,84 @@ class AdminController
         require '../app/views/admin/categories/edit.php';
     }
 
-public static function deleteCategory()
-{
-    AuthController::checkRole('admin');
+    public static function deleteCategory()
+    {
+        AuthController::checkRole('admin');
 
-    $id = $_GET['id'] ?? null;
-    if (!$id) {
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            header('Location: index.php?page=categories');
+            exit;
+        }
+
+        if (Category::isUsedByTools($id)) {
+            $_SESSION['error'] = 'Kategori masih digunakan oleh alat';
+            header('Location: index.php?page=categories');
+            exit;
+        }
+
+        Category::delete($id);
+
         header('Location: index.php?page=categories');
         exit;
     }
 
-    if (Category::isUsedByTools($id)) {
-        $_SESSION['error'] = 'Kategori masih digunakan oleh alat';
-        header('Location: index.php?page=categories');
-        exit;
+    //tools
+    public static function tools()
+    {
+        AuthController::checkRole('admin');
+
+        $tools = Tool::getAll();
+        require __DIR__ . '/../views/admin/tools/index.php';
     }
 
-    Category::delete($id);
+    public static function addTool()
+    {
+        AuthController::checkRole('admin');
 
-    header('Location: index.php?page=categories');
-    exit;
-}
+        $categories = Category::getAll();
 
-//tools
-public static function tools()
-{
-    AuthController::checkRole('admin');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            Tool::create($_POST);
+            header('Location: index.php?page=tools');
+            exit;
+        }
 
-    $tools = Tool::getAll();
-    require __DIR__ . '/../views/admin/tools/index.php';
-}
+        require __DIR__ . '/../views/admin/tools/create.php';
+    }
 
-public static function addTool()
-{
-    AuthController::checkRole('admin');
+    public static function editTool()
+    {
+        AuthController::checkRole('admin');
 
-    $categories = Category::getAll();
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            header('Location: index.php?page=tools');
+            exit;
+        }
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        Tool::create($_POST);
+        $tool = Tool::find($id);
+        $categories = Category::getAll();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            Tool::update($id, $_POST);
+            header('Location: index.php?page=tools');
+            exit;
+        }
+
+        require __DIR__ . '/../views/admin/tools/edit.php';
+    }
+
+    public static function deleteTool($id)
+    {
+        AuthController::checkRole('admin');
+
+
+            Tool::delete($id);
+
+
         header('Location: index.php?page=tools');
         exit;
     }
-
-    require __DIR__ . '/../views/admin/tools/create.php';
-}
-
-public static function editTool()
-{
-    AuthController::checkRole('admin');
-
-    $id = $_GET['id'] ?? null;
-    if (!$id) {
-        header('Location: index.php?page=tools');
-        exit;
-    }
-
-    $tool = Tool::find($id);
-    $categories = Category::getAll();
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        Tool::update($id, $_POST);
-        header('Location: index.php?page=tools');
-        exit;
-    }
-
-    require __DIR__ . '/../views/admin/tools/edit.php';
-}
-
-public static function deleteTool()
-{
-    AuthController::checkRole('admin');
-
-    $id = $_GET['id'] ?? null;
-    if ($id) {
-        Tool::delete($id);
-    }
-
-    header('Location: index.php?page=tools');
-    exit;
-}
-
-
+    
 }
